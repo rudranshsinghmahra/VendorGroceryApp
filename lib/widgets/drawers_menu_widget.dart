@@ -28,25 +28,24 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     super.initState();
   }
 
-  Future<DocumentSnapshot> getVendorsData() async {
+  Future<void> getVendorsData() async {
     var result = await FirebaseFirestore.instance
         .collection('vendors')
         .doc(user?.uid)
         .get();
-
     setState(() {
       vendorsData = result;
-      // print("Here is my vendors data");
-      // print(result.data());
     });
 
-    return vendorsData;
+    if (mounted) {
+      Provider.of<ProductProvider>(context, listen: false)
+          .getShopName(vendorsData['shopName']);
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {
-    var provider = Provider.of<ProductProvider>(context);
-    // provider.getShopName(vendorsData != null ? vendorsData['shopName'] : "");
     return Drawer(
       child: ListView(
         padding: const EdgeInsets.all(0.0),
@@ -68,18 +67,12 @@ class _DrawerWidgetState extends State<DrawerWidget> {
             onDetailsPressed: () {},
           ),
           ListTile(
-            title: const Text('Dashboard'),
-            leading: const Icon(Icons.dashboard_outlined),
-            onTap: () {},
-          ),
-          ListTile(
             onTap: () {
               Navigator.pushNamed(context, ProductScreen.id);
             },
             title: Text('Products'),
             leading: Icon(Icons.shopping_bag_outlined),
           ),
-          const Divider(),
           ListTile(
             onTap: () {
               Navigator.pushNamed(context, BannerScreen.id);
@@ -87,7 +80,6 @@ class _DrawerWidgetState extends State<DrawerWidget> {
             title: Text('Banners'),
             leading: Icon(Icons.photo),
           ),
-          const Divider(),
           ListTile(
             title: const Text('Coupons'),
             leading: const Icon(CupertinoIcons.gift),
@@ -107,8 +99,6 @@ class _DrawerWidgetState extends State<DrawerWidget> {
             leading: Icon(Icons.stacked_bar_chart),
             onTap: () {},
           ),
-          Divider(),
-          Divider(),
           ListTile(
             title: Text('Settings'),
             leading: Icon(Icons.settings_outlined),

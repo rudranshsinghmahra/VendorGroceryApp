@@ -24,46 +24,44 @@ class ProductScreen extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: Row(
-                        children: [
-                          Text(
-                            "Products",
-                            style: TextStyle(fontSize: 20),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          CircleAvatar(
-                            backgroundColor: Colors.black54,
-                            maxRadius: 15,
-                            child: FittedBox(
-                              child: Padding(
-                                padding: EdgeInsets.all(8),
-                                child: Text(
-                                  "20",
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.only(left: 10),
+                    //   child: Row(
+                    //     children: [
+                    //       Text(
+                    //         "Products",
+                    //         style: TextStyle(fontSize: 20),
+                    //       ),
+                    //       SizedBox(
+                    //         width: 10,
+                    //       ),
+                    //       CircleAvatar(
+                    //         backgroundColor: Colors.black54,
+                    //         maxRadius: 15,
+                    //         child: FittedBox(
+                    //           child: Padding(
+                    //             padding: EdgeInsets.all(8),
+                    //             child: Text(
+                    //               "20",
+                    //               style: TextStyle(color: Colors.white),
+                    //             ),
+                    //           ),
+                    //         ),
+                    //       )
+                    //     ],
+                    //   ),
+                    // ),
                     ElevatedButton.icon(
                       onPressed: () {
                         Navigator.pushNamed(context, AddNewProductScreen.id);
                       },
-                      icon: Icon(
-                        Icons.add,
-                        color: Colors.white,
-                      ),
+                      icon: Icon(Icons.add,
+                          color: Theme.of(context).primaryColor),
                       label: Text(
                         "Add New Product",
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: Theme.of(context).primaryColor),
                       ),
                     )
                   ],

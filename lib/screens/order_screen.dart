@@ -3,14 +3,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:grocery_vendor_app/widgets/drawers_menu_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:grocery_vendor_app/services/order_services.dart';
 import 'package:grocery_vendor_app/widgets/order_summary_card.dart';
 import '../providers/orders_provider.dart';
 
 class OrderScreen extends StatefulWidget {
-  const OrderScreen({Key? key}) : super(key: key);
+  const OrderScreen({super.key});
+
   static const String id = "order-screen";
+
   @override
   State<OrderScreen> createState() => _OrderScreenState();
 }
@@ -31,78 +34,73 @@ class _OrderScreenState extends State<OrderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var _orderProvider = Provider.of<OrderProvider>(context);
+    var orderProvider = Provider.of<OrderProvider>(context);
     return Scaffold(
       backgroundColor: Colors.grey[300],
       appBar: AppBar(
-        title: const Text("Orders Received"),
+        title: const Text("Received Orders"),
         centerTitle: true,
       ),
+      drawer: DrawerWidget(),
       body: Column(
         children: [
           SizedBox(
             height: 56,
             width: MediaQuery.of(context).size.width,
             child: ChipsChoice<int>.single(
-              // choiceStyle: const C2ChoiceStyle(
-              //     borderRadius: BorderRadius.all(Radius.circular(3)),
-              //     color: Colors.grey),
-                value: tag,
-                onChanged: (val) {
-                  if (val == 0) {
-                    setState(() {
-                      _orderProvider.status == null;
-                    });
-                  }
+              value: tag,
+              onChanged: (val) {
+                if (val == 0) {
+                  setState(() {
+                    orderProvider.status = null;
+                  });
+                } else {
                   setState(() {
                     tag = val;
-                    _orderProvider.status = options[val];
+                    orderProvider.status = options[val];
                   });
-                },
-                choiceItems: C2Choice.listFrom<int, String>(
-                    source: options, value: (i, v) => i, label: (i, v) => v)),
+                }
+              },
+              choiceItems: C2Choice.listFrom<int, String>(
+                  source: options, value: (i, v) => i, label: (i, v) => v
+              ),
+            ),
           ),
-          Container(
+          Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: _orderServices.orders
                   .where('seller.sellerId', isEqualTo: user?.uid)
                   .where('orderStatus',
-                      isEqualTo: tag > 0 ? _orderProvider.status : null)
+                  isEqualTo: tag > 0 ? orderProvider.status : null)
                   .snapshots(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<QuerySnapshot> snapshot) {
+              builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasError) {
-                  return const Text('Something went wrong');
+                  return const Center(child: Text('Something went wrong'));
                 }
 
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
+
                 if (snapshot.data?.size == 0) {
-                  //TODO: No orders screen
                   return Center(
                     child: Text(tag > 0
                         ? "No ${options[tag]} orders"
-                        : "No Orders. Continue Shopping"),
+                        : "No Orders received from customers"),
                   );
                 }
-                return Expanded(
-                  child: ListView(
-                    children:
-                        snapshot.data!.docs.map((DocumentSnapshot document) {
-                      Map<String, dynamic> data =
-                          document.data()! as Map<String, dynamic>;
-                      return OrderSummaryCard(
-                        documentSnapshot: document,
-                      );
-                    }).toList(),
-                  ),
+                return ListView(
+                  shrinkWrap: true,
+                  children: snapshot.data!.docs.map((DocumentSnapshot document) {
+                    return OrderSummaryCard(documentSnapshot: document);
+                  }).toList(),
                 );
               },
             ),
           ),
         ],
       ),
+
     );
   }
 }

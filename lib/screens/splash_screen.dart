@@ -5,6 +5,8 @@ import 'package:grocery_vendor_app/screens/home_screen.dart';
 import 'package:grocery_vendor_app/screens/login_screen.dart';
 import 'package:grocery_vendor_app/screens/registration_screen.dart';
 
+import 'order_screen.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
   static const String id = 'splash-screen';
@@ -22,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
         if (user == null) {
           Navigator.pushReplacementNamed(context, LoginScreen.id);
         } else {
-          Navigator.pushReplacementNamed(context, HomeScreen.id);
+          Navigator.pushReplacementNamed(context, OrderScreen.id);
         }
       });
     });

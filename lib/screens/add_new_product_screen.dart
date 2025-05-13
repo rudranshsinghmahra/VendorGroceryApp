@@ -9,7 +9,7 @@ import 'package:grocery_vendor_app/providers/products_provider.dart';
 import 'package:grocery_vendor_app/widgets/category_list.dart';
 
 class AddNewProductScreen extends StatefulWidget {
-  const AddNewProductScreen({Key? key}) : super(key: key);
+  const AddNewProductScreen({super.key});
   static const String id = 'add-new_product-screen';
 
   @override
@@ -123,13 +123,13 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                               }
                             }
                           },
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.save,
-                            color: Colors.white,
+                              color: Theme.of(context).primaryColor
                           ),
-                          label: const Text(
+                          label: Text(
                             "Save",
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(color: Theme.of(context).primaryColor),
                           ),
                         ),
                       ],
@@ -220,7 +220,7 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                                           child: Center(
                                               child: _image == null
                                                   ? const Text("Select Image")
-                                                  : Image.file(_image!)),
+                                                  : Image.file(_image!,fit: BoxFit.fill,)),
                                         ),
                                       ),
                                     ),

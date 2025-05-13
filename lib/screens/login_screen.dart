@@ -1,5 +1,6 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:grocery_vendor_app/screens/order_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:grocery_vendor_app/constants.dart';
 import 'package:grocery_vendor_app/providers/auth_provider.dart';
@@ -163,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   isLoading = false;
                                 });
                                 Navigator.pushReplacementNamed(
-                                    context, HomeScreen.id);
+                                    context, OrderScreen.id);
                               } else {
                                 setState(() {
                                   isLoading = false;

@@ -13,6 +13,7 @@ import '../widgets/category_list.dart';
 class EditViewProduct extends StatefulWidget {
   const EditViewProduct({Key? key, required this.productId}) : super(key: key);
   final String productId;
+
   @override
   State<EditViewProduct> createState() => _EditViewProductState();
 }
@@ -43,17 +44,17 @@ class _EditViewProductState extends State<EditViewProduct> {
   bool _cannotEdit = true;
   File? image;
 
-  Future _pickImageFromGallery() async{
-    try{
+  Future _pickImageFromGallery() async {
+    try {
       final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-      if(image == null){
+      if (image == null) {
         return;
       }
       final imageTemporary = File(image.path);
       setState(() {
         this.image = imageTemporary;
       });
-    }on PlatformException catch(e){
+    } on PlatformException catch (e) {
       print("Failed to Pick Imaeg $e");
     }
   }
@@ -114,128 +115,30 @@ class _EditViewProductState extends State<EditViewProduct> {
         actions: [
           AbsorbPointer(
             absorbing: _showEdit ? false : true,
-            child: ElevatedButton(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
               child: _showEdit
-                  ? const Text(
-                      "Edit Content",
-                      style: TextStyle(color: Colors.white, fontSize: 18),
+                  ? ElevatedButton(
+                      child: Text(
+                        "Edit Content",
+                        style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                            fontSize: 18),
+                      ),
+                      onPressed: () {
+                        showAlert("Editing Content Enabled");
+                        setState(
+                          () {
+                            _showEdit = false;
+                            _cannotEdit = false;
+                          },
+                        );
+                      },
                     )
-                  : const Text(
-                      "",
-                      style: TextStyle(color: Colors.white),
-                    ),
-              onPressed: () {
-                showAlert("Editing Content Enabled");
-                setState(
-                  () {
-                    _showEdit = false;
-                    _cannotEdit = false;
-                  },
-                );
-              },
+                  : Container(),
             ),
           )
         ],
-      ),
-      bottomSheet: Container(
-        height: 60,
-        child: Row(
-          children: [
-            Expanded(
-              child: InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: Container(
-                  color: Colors.black87,
-                  child: const Center(
-                    child: Text(
-                      "Cancel",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              child: AbsorbPointer(
-                absorbing: _cannotEdit,
-                child: InkWell(
-                  onTap: () {
-                    if (_formKey.currentState!.validate()) {
-                      EasyLoading.show(status: "Saving");
-                      if (image != null) {
-                        //upload new details if image is changed
-                        provider
-                            .uploadProductImage(
-                                image!.path, _productNameText.text)
-                            .then(
-                          (value) {
-                            if (value != null) {
-                              EasyLoading.dismiss();
-                              provider.updateProductDetailToDatabase(
-                                context: context,
-                                productName: _productNameText.text,
-                                weight: _weightText.text,
-                                tax: double.parse(_taxTextController.text),
-                                stockQty: int.parse(_stockText.text),
-                                sku: _skuText.text,
-                                price: double.parse(_priceText.text),
-                                lowStockQty: int.parse(_lowStockText.text),
-                                description: _descriptionText.text,
-                                collection: dropdownValue,
-                                brand: _brandText.text,
-                                comparedPrice:
-                                    int.parse(_comparedPriceText.text),
-                                productId: widget.productId,
-                                image: _image,
-                                category: categoryTextController.text,
-                                subCategory: subCategoryTextController.text,
-                                categoryImage: categoryImage,
-                              );
-                            }
-                          },
-                        );
-                      } else {
-                        //upload new details if image is not changed
-                        provider.updateProductDetailToDatabase(
-                          context: context,
-                          productName: _productNameText.text,
-                          weight: _weightText.text,
-                          tax: double.parse(_taxTextController.text),
-                          stockQty: int.parse(_stockText.text),
-                          sku: _skuText.text,
-                          price: double.parse(_priceText.text),
-                          lowStockQty: int.parse(_lowStockText.text),
-                          description: _descriptionText.text,
-                          collection: dropdownValue,
-                          brand: _brandText.text,
-                          comparedPrice: int.parse(_comparedPriceText.text),
-                          productId: widget.productId,
-                          image: _image,
-                          category: categoryTextController.text,
-                          subCategory: subCategoryTextController.text,
-                          categoryImage: categoryImage,
-                        );
-                        EasyLoading.dismiss();
-                      }
-                      provider.resetProvider();
-                    }
-                  },
-                  child: Container(
-                    color: Colors.deepPurpleAccent,
-                    child: const Center(
-                      child: Text(
-                        "Save",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
       body: doc == null
           ? const Center(child: CircularProgressIndicator())
@@ -289,7 +192,7 @@ class _EditViewProductState extends State<EditViewProduct> {
                             ],
                           ),
                           SizedBox(
-                            height: 20,
+                            height: 40,
                             child: TextFormField(
                               controller: _productNameText,
                               decoration: const InputDecoration(
@@ -355,7 +258,7 @@ class _EditViewProductState extends State<EditViewProduct> {
                           Center(
                             child: InkWell(
                               onTap: () {
-                                _pickImageFromGallery().then((value){
+                                _pickImageFromGallery().then((value) {
                                   setState(() {
                                     _image = image!.path;
                                   });
@@ -601,6 +504,103 @@ class _EditViewProductState extends State<EditViewProduct> {
                 ),
               ),
             ),
+      bottomSheet: SizedBox(
+        height: 60,
+        child: Row(
+          children: [
+            Expanded(
+              child: InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  color: Colors.black87,
+                  child: const Center(
+                    child: Text(
+                      "Cancel",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: AbsorbPointer(
+                absorbing: _cannotEdit,
+                child: InkWell(
+                  onTap: () {
+                    if (_formKey.currentState!.validate()) {
+                      EasyLoading.show(status: "Saving");
+                      if (image != null) {
+                        //upload new details if image is changed
+                        provider
+                            .uploadProductImage(
+                                image!.path, _productNameText.text)
+                            .then(
+                          (value) {
+                            EasyLoading.dismiss();
+                            provider.updateProductDetailToDatabase(
+                              context: context,
+                              productName: _productNameText.text,
+                              weight: _weightText.text,
+                              tax: double.parse(_taxTextController.text),
+                              stockQty: int.parse(_stockText.text),
+                              sku: _skuText.text,
+                              price: double.parse(_priceText.text),
+                              lowStockQty: int.parse(_lowStockText.text),
+                              description: _descriptionText.text,
+                              collection: dropdownValue,
+                              brand: _brandText.text,
+                              comparedPrice: int.parse(_comparedPriceText.text),
+                              productId: widget.productId,
+                              image: _image,
+                              category: categoryTextController.text,
+                              subCategory: subCategoryTextController.text,
+                              categoryImage: categoryImage,
+                            );
+                          },
+                        );
+                      } else {
+                        //upload new details if image is not changed
+                        provider.updateProductDetailToDatabase(
+                          context: context,
+                          productName: _productNameText.text,
+                          weight: _weightText.text,
+                          tax: double.parse(_taxTextController.text),
+                          stockQty: int.parse(_stockText.text),
+                          sku: _skuText.text,
+                          price: double.parse(_priceText.text),
+                          lowStockQty: int.parse(_lowStockText.text),
+                          description: _descriptionText.text,
+                          collection: dropdownValue,
+                          brand: _brandText.text,
+                          comparedPrice: int.parse(_comparedPriceText.text),
+                          productId: widget.productId,
+                          image: _image,
+                          category: categoryTextController.text,
+                          subCategory: subCategoryTextController.text,
+                          categoryImage: categoryImage,
+                        );
+                        EasyLoading.dismiss();
+                      }
+                      provider.resetProvider();
+                    }
+                  },
+                  child: Container(
+                    color: Colors.deepPurpleAccent,
+                    child: const Center(
+                      child: Text(
+                        "Save",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -25,6 +25,7 @@ Future<void> main() async {
       appId: "1:147156304764:android:e993fc9a95b149b4da9af9",
       messagingSenderId: "grocery-application-3329d",
       projectId: "grocery-application-3329d",
+      storageBucket: "grocery-application-3329d.appspot.com"
     ),
   );
   runApp(

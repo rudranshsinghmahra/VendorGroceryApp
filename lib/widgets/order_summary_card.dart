@@ -1,16 +1,16 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:intl/intl.dart';
 import 'package:grocery_vendor_app/services/firebase_services.dart';
 import 'package:grocery_vendor_app/services/order_services.dart';
 import 'package:grocery_vendor_app/widgets/delivery_boys_list.dart';
 
 class OrderSummaryCard extends StatefulWidget {
-  const OrderSummaryCard({Key? key, required this.documentSnapshot})
-      : super(key: key);
+  const OrderSummaryCard({super.key, required this.documentSnapshot});
+
   final DocumentSnapshot documentSnapshot;
 
   @override
@@ -43,16 +43,13 @@ class _OrderSummaryCardState extends State<OrderSummaryCard> {
 
   @override
   void initState() {
+    super.initState();
     _services
         .getCustomerDetails(widget.documentSnapshot['userId'])
         .then((value) {
-      if (value != null) {
-        setState(() {
-          customer = value;
-        });
-      } else {
-        print("No Data Found");
-      }
+      setState(() {
+        customer = value;
+      });
     });
   }
 
@@ -81,7 +78,7 @@ class _OrderSummaryCardState extends State<OrderSummaryCard> {
                 "On ${DateFormat.yMMMd().format(
                   DateTime.parse(widget.documentSnapshot['timestamp']),
                 )}",
-                style: const TextStyle(fontSize: 1),
+                style: const TextStyle(fontSize: 12),
               ),
               trailing: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -126,8 +123,8 @@ class _OrderSummaryCardState extends State<OrderSummaryCard> {
                     trailing: IconButton(
                       icon: Icon(Icons.phone),
                       onPressed: () {
-                        // FlutterPhoneDirectCaller.callNumber(
-                        //     customer?['number']);
+                        FlutterPhoneDirectCaller.callNumber(
+                            customer?['number']);
                       },
                     ),
                   )
@@ -317,14 +314,15 @@ class _OrderSummaryCardState extends State<OrderSummaryCard> {
                     onPressed: () {
                       GeoPoint location =
                           documentSnapshot['deliveryBoy']['location'];
-                      _orderService.launchMap(location, "Hello");
+                      _orderService.launchMap(
+                          location, documentSnapshot['deliveryBoy']['name']);
                     },
                     icon: const Icon(Icons.map),
                   ),
                   IconButton(
                     onPressed: () {
-                      // FlutterPhoneDirectCaller.callNumber(
-                      //     documentSnapshot['deliveryBoy']['phone']);
+                      FlutterPhoneDirectCaller.callNumber(
+                          documentSnapshot['deliveryBoy']['phone']);
                     },
                     icon: const Icon(Icons.phone),
                   ),
@@ -338,29 +336,39 @@ class _OrderSummaryCardState extends State<OrderSummaryCard> {
         width: MediaQuery.of(context).size.width,
         height: 50,
         color: Colors.grey[300],
-        child: Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton(
-              onPressed: () {
-                //Delivery Boys List
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return DeliveryBoysList(
-                        documentSnapshot: documentSnapshot,
-                      );
-                    });
-              },
-              style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.all(Theme.of(context).primaryColor),
+        child: Row(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 12.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return DeliveryBoysList(
+                          documentSnapshot: documentSnapshot,
+                        );
+                      },
+                    );
+                  },
+                  style: ButtonStyle(
+                    backgroundColor:
+                        WidgetStateProperty.all(Theme.of(context).primaryColor),
+                  ),
+                  child: Text(
+                    "Select Delivery Boy",
+                    style: TextStyle(color: Colors.white, fontSize: 14),
+                  ),
+                ),
               ),
-              child: const Text("Select Delivery Boy"),
             ),
-          ),
+          ],
         ),
       );
+    }
+    if (documentSnapshot['orderStatus'] == "Rejected") {
+      return Container();
     }
     return Container(
       color: Colors.grey[300],
@@ -374,9 +382,12 @@ class _OrderSummaryCardState extends State<OrderSummaryCard> {
                   showDialogBox(
                       "Accept Order", "Accepted", documentSnapshot.id);
                 },
-                child: const Text("Accept"),
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.green),
+                  backgroundColor: WidgetStateProperty.all(Colors.green),
+                ),
+                child: Text(
+                  "Accept",
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ),
@@ -393,13 +404,13 @@ class _OrderSummaryCardState extends State<OrderSummaryCard> {
                     showDialogBox(
                         "Cancel Order", "Rejected", documentSnapshot.id);
                   },
-                  child: const Text("Reject"),
                   style: ButtonStyle(
                     backgroundColor:
                         documentSnapshot['orderStatus'] == "Rejected"
-                            ? MaterialStateProperty.all(Colors.grey)
-                            : MaterialStateProperty.all(Colors.red),
+                            ? WidgetStateProperty.all(Colors.grey)
+                            : WidgetStateProperty.all(Colors.red),
                   ),
+                  child: Text("Reject", style: TextStyle(color: Colors.white)),
                 ),
               ),
             )

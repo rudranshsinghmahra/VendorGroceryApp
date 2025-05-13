@@ -142,13 +142,16 @@ class _BannerScreenState extends State<BannerScreen> {
                                     }
                                   });
                                 },
-                                child: const Text("Save"),
                                 style: ButtonStyle(
                                     backgroundColor: image != null
                                         ? MaterialStateProperty.all(
                                             Colors.deepPurple)
                                         : MaterialStateProperty.all(
                                             Colors.grey)),
+                                child: Text(
+                                  "Save",
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               ),
                             )),
                           ],
@@ -166,10 +169,11 @@ class _BannerScreenState extends State<BannerScreen> {
                                     });
                                   });
                                 },
-                                child: const Text("Cancel"),
                                 style: ButtonStyle(
                                     backgroundColor: MaterialStateProperty.all(
                                         Colors.black45)),
+                                child: Text("Cancel",
+                                    style: TextStyle(color: Colors.white)),
                               ),
                             ),
                           ],

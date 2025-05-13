@@ -11,7 +11,7 @@ class HomeScreen extends StatelessWidget {
         body: const Center(
           child: Text("HomeScreen"),
         ),
-        appBar: AppBar(title: const Text('Drawer Menu')),
+        appBar: AppBar(title: const Text('WELCOME')),
         drawer: const DrawerWidget());
   }
 }
